@@ -6,7 +6,9 @@ import unocss from "unocss/vite";
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [vue(), unocss()],
-  alias: {
-    "@": path.resolve(__dirname, "./src"),
+  resolve: {
+    alias: {
+      "@": `${path.resolve(__dirname, "src")}`,
+    },
   },
 });
