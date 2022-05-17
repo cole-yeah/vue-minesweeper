@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { reactive, ref, inject, defineEmits } from "vue";
 import { IMineBlock } from "@/utils/Player";
+import { Icon } from "@iconify/vue";
 
 defineProps<{ block: IMineBlock }>();
-const emit = defineEmits(["leftClick"]);
+const emit = defineEmits(["leftClick", "rightClick"]);
 
 const numberColors = [
   "text-transparent",
@@ -27,8 +27,12 @@ const getBlockClass = (block: IMineBlock) => {
 const onClick = (block: IMineBlock) => {
   emit("leftClick", block);
 };
-</script>
 
+const onContextMenu = (block: IMineBlock) => {
+  console.log("xxxxxx", block.flag);
+  emit("rightClick", block);
+};
+</script>
 <template>
   <button
     flex="~"
@@ -40,15 +44,14 @@ const onClick = (block: IMineBlock) => {
     border="0.5 gray-400/10"
     :class="getBlockClass(block)"
     @click="onClick(block)"
+    @contextmenu.prevent="onContextMenu(block)"
   >
     <template v-if="block.flag">
-      <div>F</div>
+      <Icon icon="mdi:flag" color="#b00000" />
     </template>
-    <template v-else-if="block.unkown">
-      <!-- <div>{{ block.count }}</div> -->
-    </template>
+    <template v-else-if="block.unkown"></template>
     <template v-else-if="block.isMine">
-      <div>M</div>
+      <Icon icon="mdi:mine" color="#fff" />
     </template>
     <template v-else>
       <div>{{ block.count }}</div>

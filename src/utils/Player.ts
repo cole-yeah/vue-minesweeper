@@ -66,8 +66,11 @@ class Player {
         block.unkown && count++;
       }
       if (this.status !== EGameState.failure) {
-        this.gameState.value =
-          count === this.mineCount ? EGameState.success : EGameState.playing;
+        const isWin = count === this.mineCount;
+        this.gameState.value = isWin ? EGameState.success : EGameState.playing;
+        if (isWin) {
+          alert("你赢了！！");
+        }
       }
     });
   }
@@ -104,6 +107,7 @@ class Player {
 
   private generateBlock() {
     this.isInit = true;
+    console.log("xxxxxxxxx", this.height);
     Array.from({ length: this.height * this.height }, (_, i) => {
       this.mineBlockMap.set(i, { ...MINE_BLOCK_TEMP, key: i });
       return i;
@@ -196,11 +200,16 @@ class Player {
     }
     const item = this.mineBlockMap.get(block.key)!;
     item.unkown = false;
+    item.flag && (item.flag = false);
     // 附近没有地雷
     !block.count && this.expandNearBlock(block);
   };
 
-  public handleRightClick(block: IMineBlock) {}
+  public handleRightClick = (block: IMineBlock) => {
+    if (!block.unkown) return;
+    const item = this.mineBlockMap.get(block.key)!;
+    item.flag = !item.flag;
+  };
 
   public reset(width: number, height: number, mineCount: number) {
     this.width = width;
