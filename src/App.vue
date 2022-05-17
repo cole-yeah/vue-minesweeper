@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, provide } from "vue";
 import MineBlock from "@/components/MineBlock.vue";
 import Header from "@/components/Header.vue";
 import Player, { IPlayer } from "@/utils/Player";
@@ -14,27 +14,24 @@ const mineOpt = ref<IPlayer>({
   mineCount: MINE_COUNT,
 });
 
-const player = new Player({ width: WIDTH, height: HEIGHT, mineCount: 9 });
-const minesMap = player.init();
-
-const getKey = (row: number, col: number) => row * mineOpt.value.width + col;
-
-const getBlock = (row: number, col: number) => {
-  const key = getKey(row, col);
-  console.log("cccccccccccc", key);
-  return minesMap.get(key)!;
-};
+const player = new Player({
+  width: WIDTH,
+  height: HEIGHT,
+  mineCount: MINE_COUNT,
+});
+player.init();
 </script>
 
 <template>
   <div class="wrapper">
     <Header />
-    <button>重置</button>
+    <button>{{ player.gameState }}</button>
     <div class="row" v-for="(row, i) in mineOpt.height" :key="i">
       <MineBlock
         v-for="(col, j) in mineOpt.width"
         :key="j"
-        :block="getBlock(row - 1, col - 1)"
+        :block="player.getBlock(row - 1, col - 1)"
+        @leftClick="player.handleClick"
       />
     </div>
   </div>
