@@ -5,7 +5,7 @@ export interface IPlayer {
   mineCount: number;
 }
 
-enum EGameState {
+export enum EGameState {
   playing = 0,
   success,
   failure,
@@ -39,12 +39,6 @@ const AROUND_COORDINATE: TCoordinate[] = [
   [0, 1],
   [1, 1],
 ];
-const NEAR_COORDINATE: TCoordinate[] = [
-  [0, -1],
-  [-1, 0],
-  [1, 0],
-  [0, 1],
-];
 
 class Player {
   width: number;
@@ -61,6 +55,7 @@ class Player {
     this.mineBlockMap = reactive(new Map());
     this.gameState = ref(EGameState.playing);
     watch(this.mineBlockMap, (blockMap) => {
+      if (blockMap.size < this.width * this.height) return;
       let count = 0;
       for (const block of blockMap.values()) {
         block.unkown && count++;
@@ -68,9 +63,9 @@ class Player {
       if (this.status !== EGameState.failure) {
         const isWin = count === this.mineCount;
         this.gameState.value = isWin ? EGameState.success : EGameState.playing;
-        if (isWin) {
-          alert("你赢了！！");
-        }
+        // if (isWin) {
+        //   alert("你赢了！！");
+        // }
       }
     });
   }
@@ -82,7 +77,7 @@ class Player {
   private generateMine(count: number, index: number) {
     const mineSet: Set<number> = new Set();
     const allBlocks = Array.from(
-      { length: this.mineBlockMap.size },
+      { length: this.width * this.height },
       (_, i) => i
     );
     // 第一次点击
@@ -107,7 +102,6 @@ class Player {
 
   private generateBlock() {
     this.isInit = true;
-    console.log("xxxxxxxxx", this.height);
     Array.from({ length: this.height * this.height }, (_, i) => {
       this.mineBlockMap.set(i, { ...MINE_BLOCK_TEMP, key: i });
       return i;
@@ -168,7 +162,7 @@ class Player {
 
   private expandNearBlock = (block: IMineBlock) => {
     const { key } = block;
-    const nearIndex = this.getAroundIndex(key, NEAR_COORDINATE);
+    const nearIndex = this.getAroundIndex(key, AROUND_COORDINATE);
     nearIndex.forEach((index) => {
       const curBlock = this.mineBlockMap.get(index);
       curBlock &&

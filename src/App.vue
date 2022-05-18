@@ -1,18 +1,12 @@
 <script setup lang="ts">
-import { ref, provide } from "vue";
 import MineBlock from "@/components/MineBlock.vue";
 import Header from "@/components/Header.vue";
-import Player, { IPlayer } from "@/utils/Player";
+import Confetti from "@/components/Confetti.vue";
+import Player, { IPlayer, EGameState } from "@/utils/Player";
 
 const WIDTH = 9;
 const HEIGHT = 9;
 const MINE_COUNT = 9;
-
-const mineOpt = ref<IPlayer>({
-  width: WIDTH,
-  height: HEIGHT,
-  mineCount: MINE_COUNT,
-});
 
 const player = new Player({
   width: WIDTH,
@@ -25,11 +19,11 @@ const getBlock = (row: number, col: number) => {
 };
 const onClick = (type: number) => {
   if (type === 0) {
-    player.reset(9, 9, 9);
+    player.reset(WIDTH, HEIGHT, MINE_COUNT);
   } else if (type === 1) {
-    player.reset(12, 12, 14);
+    player.reset(12, 12, 20);
   } else if (type === 2) {
-    player.reset(16, 16, 30);
+    player.reset(16, 16, 50);
   }
 };
 </script>
@@ -60,6 +54,7 @@ const onClick = (type: number) => {
       />
     </div>
   </div>
+  <Confetti :passed="player.gameState.value === EGameState.success" />
 </template>
 <style lang="less" scoped>
 .wrapper {
@@ -79,7 +74,7 @@ const onClick = (type: number) => {
   color: #ddd;
   font-size: 18px;
   font-weight: 600;
-  margin-bottom: 10px;
+  margin-bottom: 16px;
   button {
     padding: 0px 8px;
     margin-right: 6px;

@@ -29,7 +29,6 @@ const onClick = (block: IMineBlock) => {
 };
 
 const onContextMenu = (block: IMineBlock) => {
-  console.log("xxxxxx", block.flag);
   emit("rightClick", block);
 };
 </script>
