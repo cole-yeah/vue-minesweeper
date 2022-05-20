@@ -41,7 +41,6 @@ function congrats() {
 watch(
   () => props.passed,
   (v) => {
-    console.log("xxxxxxxxxxxxx", v);
     if (v) setTimeout(congrats, 300);
   },
   { flush: "post" }

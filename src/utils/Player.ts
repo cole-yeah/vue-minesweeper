@@ -63,9 +63,6 @@ class Player {
       if (this.status !== EGameState.failure) {
         const isWin = count === this.mineCount;
         this.gameState.value = isWin ? EGameState.success : EGameState.playing;
-        // if (isWin) {
-        //   alert("你赢了！！");
-        // }
       }
     });
   }
