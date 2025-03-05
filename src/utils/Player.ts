@@ -13,7 +13,7 @@ export enum EGameState {
 
 export interface IMineBlock {
   key: number;
-  unkown: boolean; // 未知的
+  unknown: boolean; // 未知的
   flag: boolean; // 标志
   isMine: boolean; //地雷
   count: number;
@@ -23,7 +23,7 @@ type TCoordinate = [x: number, y: number];
 
 const MINE_BLOCK_TEMP = {
   key: 0,
-  unkown: true,
+  unknown: true, // 同步修改
   flag: false,
   isMine: false,
   count: 0,
@@ -58,7 +58,7 @@ class Player {
       if (blockMap.size < this.width * this.height) return;
       let count = 0;
       for (const block of blockMap.values()) {
-        block.unkown && count++;
+        block.unknown && count++;
       }
       if (this.status !== EGameState.failure) {
         const isWin = count === this.mineCount;
@@ -99,12 +99,12 @@ class Player {
 
   private generateBlock() {
     this.isInit = true;
-    Array.from({ length: this.height * this.height }, (_, i) => {
+    // 修正应为 width * height（原为 height * height）
+    Array.from({ length: this.width * this.height }, (_, i) => {
       this.mineBlockMap.set(i, { ...MINE_BLOCK_TEMP, key: i });
       return i;
     });
   }
-
   private getAroundIndex(index: number, aroundCoordinate: TCoordinate[]) {
     const coordinate = this.transformCoordinate(index);
     const curAround = aroundCoordinate
@@ -163,7 +163,7 @@ class Player {
     nearIndex.forEach((index) => {
       const curBlock = this.mineBlockMap.get(index);
       curBlock &&
-        curBlock.unkown &&
+        curBlock.unknown &&
         !curBlock.isMine &&
         this.handleClick(curBlock);
     });
@@ -171,7 +171,7 @@ class Player {
 
   private expandAllMine() {
     for (const item of this.mineBlockMap.values()) {
-      item.isMine && (item.unkown = false);
+      item.isMine && (item.unknown = false);
     }
   }
 
@@ -182,7 +182,7 @@ class Player {
 
   public handleClick = (block: IMineBlock) => {
     this.isInit && this.handleFirstClick(block);
-    if (!block.unkown) return;
+    if (!block.unknown) return;
     if (block.isMine) {
       this.gameState.value = EGameState.failure;
       this.expandAllMine();
@@ -190,14 +190,14 @@ class Player {
       return;
     }
     const item = this.mineBlockMap.get(block.key)!;
-    item.unkown = false;
+    item.unknown = false;
     item.flag && (item.flag = false);
     // 附近没有地雷
     !block.count && this.expandNearBlock(block);
   };
 
   public handleRightClick = (block: IMineBlock) => {
-    if (!block.unkown) return;
+    if (!block.unknown) return;
     const item = this.mineBlockMap.get(block.key)!;
     item.flag = !item.flag;
   };
@@ -206,7 +206,7 @@ class Player {
     this.width = width;
     this.height = height;
     this.mineCount = mineCount;
-    this.mineBlockMap.clear;
+    this.mineBlockMap.clear(); // 添加括号执行清空操作
     this.init();
   }
 }
